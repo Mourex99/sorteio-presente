@@ -18,6 +18,9 @@ const GiftDraw = () => {
   const [showSuccess, setShowSuccess] = useState(false);
   const [confirmedGift, setConfirmedGift] = useState('');
   const [isDrawing, setIsDrawing] = useState(false);
+  const [userName, setUserName] = useState('');
+  const [userSurname, setUserSurname] = useState('');
+  const [isFormValid, setIsFormValid] = useState(false);
 
   useEffect(() => {
     const initializeFirestore = async () => {
@@ -40,7 +43,9 @@ const GiftDraw = () => {
           const data = giftDoc.data();
           setAllGifts(data.gifts || []);
           setDrawnGifts(data.drawn || []);
-          setAvailableGifts(data.gifts.filter(gift => !data.drawn.includes(gift)));
+          // Atualizar verificando os itens já sorteados
+          const drawnItems = (data.drawn || []).map(d => d.item);
+          setAvailableGifts(data.gifts.filter(gift => !drawnItems.includes(gift)));
         }
         setIsLoading(false);
       } catch (error) {
@@ -54,14 +59,24 @@ const GiftDraw = () => {
     const unsubscribe = onSnapshot(doc(db, 'gifts', 'status'), (doc) => {
       if (doc.exists()) {
         const data = doc.data();
-        setAllGifts(data.gifts || []);
-        setDrawnGifts(data.drawn || []);
-        setAvailableGifts(data.gifts.filter(gift => !data.drawn.includes(gift)));
+        const gifts = data.gifts || [];
+        const drawn = data.drawn || [];
+        
+        setAllGifts(gifts);
+        setDrawnGifts(drawn);
+        // Calcular presentes disponíveis comparando os itens
+        const drawnItems = drawn.map(d => d.item);
+        const available = gifts.filter(gift => !drawnItems.includes(gift));
+        setAvailableGifts(available);
       }
     });
 
     return () => unsubscribe();
   }, []);
+
+  useEffect(() => {
+    setIsFormValid(userName.trim() !== '' && userSurname.trim() !== '');
+  }, [userName, userSurname]);
 
   const drawGift = () => {
     if (availableGifts.length === 0) {
@@ -103,22 +118,36 @@ const GiftDraw = () => {
       const giftRef = doc(db, 'gifts', 'status');
       const giftDoc = await getDoc(giftRef);
 
+      const drawnItem = {
+        item: tempGift,
+        name: userName,
+        surname: userSurname
+      };
+
       if (!giftDoc.exists()) {
-        // Criar documento se não existir
         await setDoc(giftRef, {
-          drawn: [tempGift],
+          drawn: [drawnItem],
           gifts: allGifts,
         });
       } else {
-        // Atualizar documento existente
+        const updatedDrawn = [...drawnGifts, drawnItem];
+        // Atualizar o documento com o novo item sorteado
         await updateDoc(giftRef, {
-          drawn: [...drawnGifts, tempGift]
+          drawn: updatedDrawn
         });
+        
+        // Atualizar estados locais
+        setDrawnGifts(updatedDrawn);
+        setAvailableGifts(allGifts.filter(gift => 
+          !updatedDrawn.map(d => d.item).includes(gift)
+        ));
       }
       
       setConfirmedGift(tempGift);
       setShowConfirmation(false);
       setShowSuccess(true);
+      setUserName('');
+      setUserSurname('');
     } catch (error) {
       console.error("Erro ao confirmar presente:", error);
       alert("Erro ao confirmar presente. Tente novamente.");
@@ -206,16 +235,47 @@ const GiftDraw = () => {
       <AdminAuth onAuthSuccess={setIsAdmin} isAdmin={isAdmin} />
       
       <h1>Lista de Presentes</h1>
-      <p className="subtitle">
-        Presentes disponíveis: {availableGifts.length} de {allGifts.length}
-      </p>
       
+      {/* Mostrar contagem apenas para admin */}
+      {isAdmin && (
+        <p className="subtitle">
+          Presentes disponíveis: {availableGifts.length} de {allGifts.length}
+        </p>
+      )}
+      
+      <div className="user-form">
+        <div className="input-group">
+          <label htmlFor="userName">Nome:</label>
+          <input
+            id="userName"
+            type="text"
+            value={userName}
+            onChange={(e) => setUserName(e.target.value)}
+            placeholder="Digite seu nome"
+            required
+          />
+        </div>
+        <div className="input-group">
+          <label htmlFor="userSurname">Sobrenome:</label>
+          <input
+            id="userSurname"
+            type="text"
+            value={userSurname}
+            onChange={(e) => setUserSurname(e.target.value)}
+            placeholder="Digite seu sobrenome"
+            required
+          />
+        </div>
+      </div>
+
       <button 
         onClick={drawGift} 
-        disabled={isAnimating || availableGifts.length === 0 || showConfirmation}
+        disabled={!isFormValid || isAnimating || availableGifts.length === 0 || showConfirmation}
         className="drawButton"
       >
-        {availableGifts.length === 0 ? 'Todos os presentes foram sorteados' : 'Sortear Presente'}
+        {!isFormValid ? 'Preencha seu nome completo' : 
+         availableGifts.length === 0 ? 'Todos os presentes foram sorteados' : 
+         'Sortear Presente'}
       </button>
 
       {isDrawing && (
@@ -260,6 +320,18 @@ const GiftDraw = () => {
         </div>
       )}
 
+      {/* Lista de presentes sorteados para usuários normais */}
+      {!isAdmin && drawnGifts.length > 0 && (
+        <div className="drawn-gifts">
+          <h3>Presentes já sorteados:</h3>
+          <ul>
+            {drawnGifts.map((drawn, index) => (
+              <li key={index}>{drawn.item}</li>
+            ))}
+          </ul>
+        </div>
+      )}
+
       {isAdmin && (
         <div className="admin-panel">
           <button onClick={resetGifts} className="admin-button">
@@ -295,19 +367,21 @@ const GiftDraw = () => {
               ))}
             </ul>
           </div>
+
+          <div className="drawn-gifts-admin">
+            <h3>Presentes Sorteados ({drawnGifts.length}):</h3>
+            <ul>
+              {drawnGifts.map((drawn, index) => (
+                <li key={index} className="drawn-item">
+                  <span>{drawn.name} {drawn.surname}: {drawn.item}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
         </div>
       )}
 
-      {drawnGifts.length > 0 && (
-        <div className="drawn-gifts">
-          <h3>Presentes já sorteados:</h3>
-          <ul>
-            {drawnGifts.map((gift, index) => (
-              <li key={index}>{gift}</li>
-            ))}
-          </ul>
-        </div>
-      )}
+      {/* Remover a lista de presentes sorteados para usuários normais */}
     </div>
   );
 };
