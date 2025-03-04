@@ -1,7 +1,7 @@
 "use client";
 import React, { useState, useEffect } from 'react';
 import { db } from '@/firebase/config';
-import { collection, onSnapshot, doc, updateDoc, setDoc, getDoc } from 'firebase/firestore';
+import { doc, updateDoc, setDoc, getDoc } from 'firebase/firestore';
 import AdminAuth from './AdminAuth';
 
 const GiftDraw = () => {
