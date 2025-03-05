@@ -1,14 +1,36 @@
+/* Importar fontes */
+@font-face {
+  font-family: 'Glacial Indifference';
+  src: url('/fonts/GlacialIndifference-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Glacial Indifference';
+  src: url('/fonts/GlacialIndifference-Bold.ttf') format('truetype');
+  font-weight: bold;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Apricots';
+  src: url('/fonts/Apricots.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
 :root {
-  --primary-color: #FF8C69; /* Cor salmão */
-  --primary-light: #FFA07A; /* Salmão claro */
-  --primary-dark: #E9967A; /* Salmão escuro */
-  --background-color: #FAFAFA; /* Off-white */
-  --hover-shadow: rgba(255, 140, 105, 0.2); /* Sombra salmão */
+  --primary-color: #c18262; /* Nova cor principal */
+  --primary-light: #d19272; /* Versão mais clara */
+  --primary-dark: #b17252; /* Versão mais escura */
+  --background-color: #fef9f4; /* Nova cor de fundo */
+  --hover-shadow: rgba(193, 130, 98, 0.2); /* Nova cor da sombra */
 }
 
 body {
   margin: 0;
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-family: 'Glacial Indifference', -apple-system, BlinkMacSystemFont, sans-serif;
   background-color: var(--background-color);
   color: #333;
 }
@@ -24,6 +46,7 @@ h1 {
   font-size: 2.5rem;
   color: var(--primary-color);
   margin-bottom: 1rem;
+  font-family: 'Apricots', cursive;
 }
 
 .subtitle {
@@ -64,6 +87,7 @@ drawButton:disabled {
 .result h2 {
   color: var(--primary-color);
   margin-bottom: 1rem;
+  font-family: 'Apricots', cursive;
 }
 
 .gift {
@@ -106,6 +130,7 @@ drawButton:disabled {
 .drawn-gifts h3 {
   color: var(--primary-color);
   margin-bottom: 1rem;
+  font-family: 'Apricots', cursive;
 }
 
 .drawn-gifts ul {
@@ -254,6 +279,7 @@ drawButton:disabled {
   color: var(--primary-color);
   font-size: 1.8rem;
   margin-bottom: 1.5rem;
+  font-family: 'Apricots', cursive;
 }
 
 .confirmation-question {
@@ -392,6 +418,7 @@ drawButton:disabled {
   font-size: 1rem; /* Reduzido de 1.1rem */
   margin-bottom: 0.8rem; /* Reduzido de 1rem */
   text-align: center;
+  font-family: 'Apricots', cursive;
 }
 
 .admin-form {
@@ -503,6 +530,7 @@ drawButton:disabled {
   color: var(--primary-color);
   font-size: 2rem;
   margin-bottom: 1.5rem;
+  font-family: 'Apricots', cursive;
 }
 
 .gift-confirmation {
@@ -598,6 +626,7 @@ drawButton:disabled {
   color: var(--primary-color);
   margin-bottom: 1rem;
   text-align: left;
+  font-family: 'Apricots', cursive;
 }
 
 .gift-list-admin ul {
@@ -738,6 +767,7 @@ drawButton:disabled {
   font-size: 1.2rem;
   margin-bottom: 1.5rem;
   text-align: center;
+  font-family: 'Apricots', cursive;
 }
 
 .admin-form {
@@ -889,6 +919,7 @@ drawButton:disabled {
   margin: 0;
   color: var(--primary-color);
   font-size: 1.2rem;
+  font-family: 'Apricots', cursive;
 }
 
 .close-sidebar {
@@ -1065,6 +1096,7 @@ drawButton:disabled {
   color: var(--primary-color);
   margin-bottom: 1rem;
   font-size: 1.1rem;
+  font-family: 'Apricots', cursive;
 }
 
 .drawn-gifts-admin ul {
