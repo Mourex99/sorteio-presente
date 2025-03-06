@@ -9,28 +9,27 @@ export default function RootLayout({ children }) {
       <head>
         <link
           rel="preload"
-          href="/fonts/GlacialIndifference-Regular.ttf"
+          href="/fonts/GlacialIndifference-Regular.otf"
           as="font"
-          type="font/ttf"
+          type="font/otf"
           crossOrigin="anonymous"
         />
         <link
           rel="preload"
-          href="/fonts/GlacialIndifference-Bold.ttf"
+          href="/fonts/GlacialIndifference-Bold.otf"
           as="font"
-          type="font/ttf"
+          type="font/otf"
           crossOrigin="anonymous"
         />
         <link
           rel="preload"
-          href="/fonts/Apricots.ttf"
+          href="/fonts/Apricot-BF650c4a6357ce1.otf"
           as="font"
-          type="font/ttf"
+          type="font/otf"
           crossOrigin="anonymous"
         />
-        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
       </head>
       <body>{children}</body>
     </html>
-  );
+  )
 }

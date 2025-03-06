@@ -1,23 +1,45 @@
 /* Importar fontes */
 @font-face {
   font-family: 'Glacial Indifference';
-  src: url('/fonts/GlacialIndifference-Regular.ttf') format('truetype');
+  src: url('/fonts/GlacialIndifference-Regular.otf') format('opentype');
   font-weight: normal;
   font-style: normal;
+  font-display: swap;
 }
 
 @font-face {
   font-family: 'Glacial Indifference';
-  src: url('/fonts/GlacialIndifference-Bold.ttf') format('truetype');
+  src: url('/fonts/GlacialIndifference-Bold.otf') format('opentype');
   font-weight: bold;
   font-style: normal;
+  font-display: swap;
 }
 
 @font-face {
   font-family: 'Apricots';
-  src: url('/fonts/Apricots.ttf') format('truetype');
+  src: url('/fonts/Apricot-BF650c4a6357ce1.otf') format('opentype');
   font-weight: normal;
   font-style: normal;
+  font-display: swap;
+}
+
+/* Estilo comum para todos os elementos com fonte Apricots */
+h1,
+.result h2,
+.drawn-gifts h3,
+.gift-list-admin h3,
+.drawn-gifts-admin h3,
+.confirmation-modal h2,
+.success-content h2,
+.sidebar-header h3,
+.admin-modal h3 {
+  font-family: 'Apricots', cursive;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2); /* Sombra preta com 20% de opacidade */
+}
+
+/* Aumentar sombra para o título principal */
+h1 {
+  text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.25); /* Sombra preta mais pronunciada para o h1 */
 }
 
 :root {
@@ -139,13 +161,13 @@ drawButton:disabled {
   text-align: left;
 }
 
-.drawn-gifts li {
+drawn-gifts li {
   padding: 0.5rem 0;
   border-bottom: 1px solid #eee;
   color: #666;
 }
 
-.drawn-gifts li:last-child {
+drawn-gifts li:last-child {
   border-bottom: none;
 }
 
