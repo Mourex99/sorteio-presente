@@ -21,6 +21,11 @@ const GiftDraw = () => {
   const [userName, setUserName] = useState('');
   const [userSurname, setUserSurname] = useState('');
   const [isFormValid, setIsFormValid] = useState(false);
+  const [showRemovalSuccess, setShowRemovalSuccess] = useState(false);
+  const [removedGiftInfo, setRemovedGiftInfo] = useState({ item: '', name: '' });
+  const [showResetConfirm, setShowResetConfirm] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [deleteIndex, setDeleteIndex] = useState(null);
 
   useEffect(() => {
     const initializeFirestore = async () => {
@@ -159,7 +164,12 @@ const GiftDraw = () => {
     setTempGift('');
   };
 
-  const resetGifts = async () => {
+  const confirmReset = () => {
+    if (!isAdmin) return;
+    setShowResetConfirm(true);
+  };
+
+  const executeReset = async () => {
     if (!isAdmin) return;
     
     try {
@@ -168,6 +178,7 @@ const GiftDraw = () => {
         drawn: [],
         gifts: allGifts
       });
+      setShowResetConfirm(false);
     } catch (error) {
       console.error('Erro ao resetar presentes:', error);
       alert('Erro ao resetar presentes. Tente novamente.');
@@ -219,6 +230,56 @@ const GiftDraw = () => {
       console.error('Erro ao excluir presente:', error);
       alert('Erro ao excluir presente. Tente novamente.');
     }
+  };
+
+  const confirmDeleteDrawnGift = (index) => {
+    if (!isAdmin) return;
+    setDeleteIndex(index);
+    setShowDeleteConfirm(true);
+  };
+
+  const executeDeleteDrawnGift = async () => {
+    if (!isAdmin || deleteIndex === null || deleteIndex < 0 || deleteIndex >= drawnGifts.length) {
+      cancelDelete();
+      return;
+    }
+    
+    try {
+      const giftRef = doc(db, 'gifts', 'status');
+      
+      // Criar uma cópia dos arrays para manipulação
+      const updatedDrawnGifts = [...drawnGifts];
+      const removedItem = updatedDrawnGifts.splice(deleteIndex, 1)[0];
+      
+      // Atualizar o documento no Firestore
+      await updateDoc(giftRef, {
+        drawn: updatedDrawnGifts
+      });
+      
+      // Armazenar informações do item removido e mostrar modal de sucesso
+      setRemovedGiftInfo({
+        item: removedItem.item,
+        name: `${removedItem.name} ${removedItem.surname}`
+      });
+      setShowDeleteConfirm(false);
+      setDeleteIndex(null);
+      setShowRemovalSuccess(true);
+    } catch (error) {
+      console.error('Erro ao excluir sorteio:', error);
+      alert('Erro ao excluir sorteio. Tente novamente.');
+      cancelDelete();
+    }
+  };
+
+  const cancelReset = () => setShowResetConfirm(false);
+  const cancelDelete = () => {
+    setShowDeleteConfirm(false);
+    setDeleteIndex(null);
+  };
+
+  const closeRemovalModal = () => {
+    setShowRemovalSuccess(false);
+    setRemovedGiftInfo({ item: '', name: '' });
   };
 
   const closeSuccessModal = () => {
@@ -320,6 +381,53 @@ const GiftDraw = () => {
         </div>
       )}
 
+      {/* Modal de sucesso de remoção */}
+      {showRemovalSuccess && (
+        <div className="success-modal">
+          <div className="success-content removal-success">
+            <h2>Sorteio Removido!</h2>
+            <p className="gift-confirmation">O presente:</p>
+            <p className="confirmed-gift">{removedGiftInfo.item}</p>
+            <p className="removal-person">foi removido do sorteio de <span>{removedGiftInfo.name}</span></p>
+            <p className="removal-info">O presente voltou para a lista de presentes disponíveis.</p>
+            <button onClick={closeRemovalModal} className="close-button">
+              Entendi
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Modal de confirmação de reset */}
+      {showResetConfirm && (
+        <div className="confirmation-modal">
+          <h2>Confirmação</h2>
+          <div className="confirmation-question">
+            <p>Gostaria de resetar o sorteio?</p>
+            <p className="warning-text">Se resetado, o sorteio irá voltar por completo do início.</p>
+            <div className="button-group">
+              <button onClick={executeReset} className="confirm-button">Sim, resetar tudo</button>
+              <button onClick={cancelReset} className="reject-button">Não, cancelar</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal de confirmação de exclusão de sorteio */}
+      {showDeleteConfirm && deleteIndex !== null && deleteIndex >= 0 && deleteIndex < drawnGifts.length && (
+        <div className="confirmation-modal">
+          <h2>Confirmação</h2>
+          <div className="confirmation-question">
+            <p>Deseja voltar este item para a lista de sorteio?</p>
+            <p className="item-to-delete">{drawnGifts[deleteIndex].item}</p>
+            <p className="warning-text">O presente ficará disponível para ser sorteado novamente.</p>
+            <div className="button-group">
+              <button onClick={executeDeleteDrawnGift} className="confirm-button">Sim, retornar item</button>
+              <button onClick={cancelDelete} className="reject-button">Não, cancelar</button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Lista de presentes sorteados para usuários normais */}
       {!isAdmin && drawnGifts.length > 0 && (
         <div className="drawn-gifts">
@@ -334,7 +442,7 @@ const GiftDraw = () => {
 
       {isAdmin && (
         <div className="admin-panel">
-          <button onClick={resetGifts} className="admin-button">
+          <button onClick={confirmReset} className="admin-button">
             Resetar Sorteio
           </button>
           
@@ -374,6 +482,13 @@ const GiftDraw = () => {
               {drawnGifts.map((drawn, index) => (
                 <li key={index} className="drawn-item">
                   <span>{drawn.name} {drawn.surname}: {drawn.item}</span>
+                  <button 
+                    onClick={() => confirmDeleteDrawnGift(index)}
+                    className="delete-button"
+                    title="Cancelar este sorteio"
+                  >
+                    ❌
+                  </button>
                 </li>
               ))}
             </ul>

@@ -1133,8 +1133,25 @@ drawn-gifts li:last-child {
   color: #666;
   display: flex;
   align-items: center;
+  justify-content: space-between; /* Alinha os elementos aos lados */
   gap: 0.5rem;
   font-size: 0.95rem;
+}
+
+.drawn-item span {
+  flex: 1; /* Permite que o texto ocupe o espaço disponível */
+}
+
+.drawn-item .delete-button {
+  padding: 0.3rem;
+  opacity: 0.7;
+  transition: opacity 0.2s, transform 0.2s;
+  cursor: pointer;
+}
+
+.drawn-item .delete-button:hover {
+  opacity: 1;
+  transform: scale(1.1);
 }
 
 .drawn-item:last-child {
@@ -1161,5 +1178,100 @@ drawn-gifts li:last-child {
   .drawn-item {
     font-size: 0.85rem;
     padding: 0.7rem;
+  }
+}
+
+/* Estilos para o modal de remoção de sorteio */
+.removal-success h2 {
+  color: var(--primary-color);
+  font-size: 2rem;
+  margin-bottom: 1rem;
+}
+
+.removal-person {
+  color: #666;
+  font-size: 1.1rem;
+  margin-top: 0.5rem;
+}
+
+.removal-person span {
+  font-weight: 600;
+  color: var(--primary-dark);
+}
+
+.removal-info {
+  margin-top: 1.5rem;
+  padding: 1rem;
+  background-color: var(--background-color);
+  border-radius: 8px;
+  font-size: 1rem;
+  color: #666;
+  border-left: 4px solid var(--primary-color);
+}
+
+/* Animação para o modal de remoção */
+.removal-success {
+  animation: fadeInScale 0.3s ease-out;
+}
+
+@keyframes fadeInScale {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Ajustes responsivos para o modal de remoção */
+@media (max-width: 480px) {
+  .removal-success h2 {
+    font-size: 1.5rem;
+  }
+  
+  .removal-person {
+    font-size: 1rem;
+  }
+  
+  .removal-info {
+    font-size: 0.9rem;
+    padding: 0.8rem;
+  }
+}
+
+/* Estilos para avisos nos modais de confirmação */
+.warning-text {
+  color: #e74c3c;
+  font-size: 1rem;
+  font-weight: 500;
+  margin-top: 0.5rem;
+  margin-bottom: 1rem;
+  padding: 0.7rem;
+  background-color: rgba(231, 76, 60, 0.1);
+  border-radius: 6px;
+  border-left: 3px solid #e74c3c;
+}
+
+.item-to-delete {
+  color: var(--primary-dark);
+  font-size: 1.3rem;
+  font-weight: 600;
+  margin: 1rem 0;
+  padding: 0.5rem;
+  background-color: var(--background-color);
+  border-radius: 6px;
+}
+
+/* Ajustes responsivos para textos de aviso */
+@media (max-width: 480px) {
+  .warning-text {
+    font-size: 0.9rem;
+    padding: 0.6rem;
+  }
+  
+  .item-to-delete {
+    font-size: 1.1rem;
   }
 }
